@@ -1,6 +1,8 @@
 # PyNvVideoPipe
 
-![License](https://img.shields.io/badge/license-BSD_2_Clause-blue.svg?style=for-the-badge)![CUDA](https://img.shields.io/badge/NVIDIA_CUDA-Optimized-76B900?logo=nvidia&logoColor=white&style=for-the-badge)![Platform](https://img.shields.io/badge/platform-Linux-77216F?logo=linux&logoColor=white&style=for-the-badge)
+![License](https://img.shields.io/badge/license-BSD_2_Clause-blue.svg?style=for-the-badge)
+![CUDA](https://img.shields.io/badge/NVIDIA_CUDA-Optimized-76B900?logo=nvidia&logoColor=white&style=for-the-badge)
+![Platform](https://img.shields.io/badge/platform-Linux-77216F?logo=linux&logoColor=white&style=for-the-badge)
 
 High-Performance Video Processing Pipeline in Python, Powered by NVIDIA CUDA
 
