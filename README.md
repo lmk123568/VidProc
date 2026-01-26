@@ -20,7 +20,7 @@ Minimizes memory copies and CPU–GPU data transfers for maximum efficiency
 | ---------- | -------- | -------------------------------- | ---------------------------------- | --------------- |
 | DeepStream | NO       | High                             | Low                                | High            |
 | VideoPipe  | YES      | medium（requires C++ knowledge） | High                               | Medium          |
-| our        | YES      | ≈ 0                              | High +++++++++++                   | Medium ---      |
+| Our        | YES      | ≈ 0                              | High +++++++++++                   | Medium ---      |
 
 ### Quick Start
 
@@ -72,6 +72,21 @@ Minimizes memory copies and CPU–GPU data transfers for maximum efficiency
    ```bash
    python main.py
    ```
+
+### Benchmark
+
+**Date**: 2026-01-25
+
+**Hardware**: AMD Ryzen 9 5950 X + NVIDIA GeForce RTX 3090
+
+**Test Configuration**: 4 × RTSP Decoders → YOLO (TensorRT) → 4 × RTMP Encoders
+
+|           | CPU  | RAM  | GPU VRAM |
+| --------- | ---- | ---- | -------- |
+| VidepPipe |      |      |          |
+| Our       |      |      |          |
+
+
 
 ### Notes
 
