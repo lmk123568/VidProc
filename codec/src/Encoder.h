@@ -45,6 +45,8 @@ private:
     int64_t frame_index = 0;
     bool    is_finished = false;
 
+    void* ffmpeg_cuda_stream = nullptr;
+
     // For NPP/CUDA conversion
     // We might need intermediate buffers if NPP requires it,
     // but usually we can map pointers directly if strides are aligned.

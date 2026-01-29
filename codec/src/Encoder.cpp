@@ -1,5 +1,7 @@
 #include "Encoder.h"
 
+#include <c10/cuda/CUDAGuard.h>
+#include <c10/cuda/CUDAStream.h>
 #include <cuda_runtime.h>
 
 #include <iostream>
@@ -68,6 +70,12 @@ void Encoder::init_ffmpeg(std::string codec) {
     ret = av_hwdevice_ctx_create(&hw_device_ctx, AV_HWDEVICE_TYPE_CUDA, nullptr, nullptr, 0);
     if (ret < 0) {
         throw std::runtime_error("Failed to create CUDA HW device");
+    }
+
+    {
+        AVHWDeviceContext*   device_ctx      = (AVHWDeviceContext*)hw_device_ctx->data;
+        AVCUDADeviceContext* cuda_device_ctx = device_ctx ? (AVCUDADeviceContext*)device_ctx->hwctx : nullptr;
+        ffmpeg_cuda_stream                  = cuda_device_ctx ? (void*)cuda_device_ctx->stream : nullptr;
     }
 
     codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
@@ -143,6 +151,11 @@ void Encoder::encode(torch::Tensor tensor, double pts) {
         throw std::runtime_error("Input tensor must be CUDA uint8");
     }
 
+    c10::cuda::CUDAGuard device_guard(tensor.device());
+
+    cudaStream_t torch_stream  = c10::cuda::getCurrentCUDAStream().stream();
+    cudaStream_t encode_stream = ffmpeg_cuda_stream ? (cudaStream_t)ffmpeg_cuda_stream : torch_stream;
+
     int ret = av_hwframe_get_buffer(codec_ctx->hw_frames_ctx, frame, 0);
     if (ret < 0) {
         throw std::runtime_error("Failed to allocate frame from HW pool");
@@ -166,7 +179,26 @@ void Encoder::encode(torch::Tensor tensor, double pts) {
     uint8_t* pDstUV     = (uint8_t*)frame->data[1];
     int      nDstUVStep = frame->linesize[1];
 
-    rgb_to_nv12(pSrc, nSrcStep, pDstY, nDstYStep, pDstUV, nDstUVStep, width, height);
+    if (encode_stream != torch_stream) {
+        cudaEvent_t ev;
+        cudaError_t err = cudaEventCreateWithFlags(&ev, cudaEventDisableTiming);
+        if (err != cudaSuccess) {
+            throw std::runtime_error(std::string("cudaEventCreateWithFlags failed: ") + cudaGetErrorString(err));
+        }
+        err = cudaEventRecord(ev, torch_stream);
+        if (err != cudaSuccess) {
+            cudaEventDestroy(ev);
+            throw std::runtime_error(std::string("cudaEventRecord failed: ") + cudaGetErrorString(err));
+        }
+        err = cudaStreamWaitEvent(encode_stream, ev, 0);
+        if (err != cudaSuccess) {
+            cudaEventDestroy(ev);
+            throw std::runtime_error(std::string("cudaStreamWaitEvent failed: ") + cudaGetErrorString(err));
+        }
+        cudaEventDestroy(ev);
+    }
+
+    rgb_to_nv12(pSrc, nSrcStep, pDstY, nDstYStep, pDstUV, nDstUVStep, width, height, encode_stream);
 
     if (pts >= 0) {
         // pts is in seconds
