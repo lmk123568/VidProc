@@ -82,7 +82,7 @@ if __name__ == "__main__":
     import cv2
     import numpy as np
 
-    img_bgr = cv2.imread("./zidane.jpg")
+    img_bgr = cv2.imread("assets/zidane.jpg")
     img_bgr = cv2.resize(img_bgr, (1024, 576))
 
     # ultralytics
@@ -94,15 +94,15 @@ if __name__ == "__main__":
         trt_bboxes = r.boxes.xyxy.cpu().numpy()
 
     # our
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from yolo26.models import YOLO26DetTRT
+    # sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    # from scripts.models import YOLO26DetTRT
 
-    img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-    img_rgb = torch.as_tensor(img_rgb.copy(), device=torch.device(args.device))
-    our_model = YOLO26DetTRT(
-        weights=f, conf_thres=0.25, device=torch.device(args.device)
-    )
-    our_bboxes = our_model(img_rgb)[:, :4].cpu().numpy()
+    # img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    # img_rgb = torch.as_tensor(img_rgb.copy(), device=torch.device(args.device))
+    # our_model = YOLO26DetTRT(
+    #     weights=f, conf_thres=0.25, device=torch.device(args.device)
+    # )
+    # our_bboxes = our_model(img_rgb)[:, :4].cpu().numpy()
 
-    print(f"==> trt_bboxes:\n {trt_bboxes}")
-    print(f"==> our_bboxes:\n {our_bboxes}")
+    # print(f"==> trt_bboxes:\n {trt_bboxes}")
+    # print(f"==> our_bboxes:\n {our_bboxes}")

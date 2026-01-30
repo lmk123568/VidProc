@@ -64,10 +64,10 @@ setup(
         CUDAExtension(
             MODULE_NAME,
             [
-                "src/Decoder.cpp",
-                "src/Encoder.cpp",
-                "src/rgb_to_nv12.cu",
-                "./bindings.cpp",
+                "cpp/src/Decoder.cpp",
+                "cpp/src/Encoder.cpp",
+                "cpp/src/rgb_to_nv12.cu",
+                "cpp/bindings.cpp",
             ],
             include_dirs=include_dirs,
             library_dirs=library_dirs,

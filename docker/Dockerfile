@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.8.0-cuda12.6-cudnn9-devel
+FROM nvcr.io/nvidia/pytorch:25.03-py3
 
 RUN \
     sed -i "s/archive.ubuntu./mirrors.aliyun./g" /etc/apt/sources.list && \
@@ -6,7 +6,7 @@ RUN \
     sed -i "s/security.debian.org\/debian-security/mirrors.aliyun.com\/debian-security/g" /etc/apt/sources.list && \
     sed -i "s/httpredir.debian.org\/debian-security/mirrors.aliyun.com\/debian-security/g" /etc/apt/sources.list && \
     apt update -y && \
-    apt install -y --no-install-recommends wget curl ffmpeg vim pkg-config libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev && \
+    apt install -y --no-install-recommends ffmpeg vim pkg-config libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev && \
     pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple ultralytics onnx onnxslim tensorrt supervision && \
     rm -rf /var/lib/apt/lists/*
 

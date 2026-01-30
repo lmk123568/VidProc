@@ -17,7 +17,7 @@ class VideoPipe(torch.multiprocessing.Process):
     def run(self):
         # Import hardware-accelerated codec and YOLO detection model
         from codec import nv_accel
-        from yolo26.models import YOLO26DetTRT
+        from scripts.models import YOLO26DetTRT
 
         # Initialize CUDA-based video decoder with desired resolution and reconnection settings
         decoder = nv_accel.Decoder(
