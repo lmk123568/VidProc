@@ -1,7 +1,7 @@
 <p style="" align="center">
   <img src="./assets/logo.png" alt="Logo" width="20%">
-  <h1>PyNvVideoPipe</h1>
 </p>
+<h1 align="center">PyNvVideoPipe</h1>
 <p style="margin:0px" align="center">
     <img src="https://img.shields.io/badge/license-BSD--2-blue.svg?&logo=c&logoColor=white&style=for-the-badge">
     <img src="https://img.shields.io/badge/CUDA-12.8-76B900?&logo=nvidia&logoColor=white&style=for-the-badge">
