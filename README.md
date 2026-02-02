@@ -51,7 +51,7 @@ docker run -it \
   --gpus all \
   -e NVIDIA_DRIVER_CAPABILITIES=all \
   -v {your_path}/VidProc:/workspace \
-  PyNvVideoPipe:cuda12.6 \
+  vidproc:cuda12.8 \
   bash
 ```
 
