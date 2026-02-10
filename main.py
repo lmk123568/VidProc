@@ -6,7 +6,7 @@ import torch
 import torch.multiprocessing as mp
 
 
-class VideoProc(mp.Process):
+class Pipeline(mp.Process):
     def __init__(self, gpu, input_url, output_url):
         super().__init__()
         self.gpu = gpu
@@ -17,10 +17,10 @@ class VideoProc(mp.Process):
 
     def run(self):
         # Import hardware-accelerated codec and YOLO detection model
-        import nv_accel
+        import pvp
 
         # Initialize CUDA-based video decoder with desired resolution and reconnection settings
-        decoder = nv_accel.Decoder(
+        decoder = pvp.Decoder(
             self.input_url,
             enable_frame_skip=False,  # Ensure every frame is decoded
             output_width=1024,
@@ -40,7 +40,7 @@ class VideoProc(mp.Process):
         # Initialize CUDA-based H.264 encoder matching decoder's resolution
         fps = decoder.get_fps()
         fps = float(round(fps)) if fps and fps > 0 else 25.0
-        encoder = nv_accel.Encoder(
+        encoder = pvp.Encoder(
             output_url=self.output_url,
             width=decoder.get_width(),
             height=decoder.get_height(),
@@ -50,10 +50,19 @@ class VideoProc(mp.Process):
         )
 
         # Load TensorRT-optimized YOLOv26 nano model for object detection
-        yolo = nv_accel.Yolo26DetTRT(
+        det = pvp.Yolo26DetTRT(
             engine_path="./yolo26n_1x3x576x1024_fp16.engine",
             conf_thres=0.25,  # Confidence threshold for detections
         )
+
+        # The following example shows how to chain additional GPU models for further inference
+        # without ever copying frame data back to the CPU.
+        # Make sure every model’s inputs/outputs stay as GPU tensors to avoid any CPU <-> GPU transfers.
+        # For instance:
+        # import ultralytics
+        # cls = ultralytics.YOLO("./yolo26n-cls.engine").to("cuda")   # load model on GPU
+        # seg = ultralytics.YOLO("./yolo26n-seg.engine").to("cuda")
+        # pose = ultralytics.YOLO("./yolo26n-pose.engine").to("cuda")
 
         # Supervision annotators and tracker for visualization
         tracker = sv.ByteTrack()
@@ -90,14 +99,12 @@ class VideoProc(mp.Process):
                 t1 = time.time()  # End of wait stage, start of detection
 
                 # Run YOLO inference on GPU tensor
-                det_results = yolo(frame)
+                det_results = det(frame)
 
-                # Additional models can be added for secondary inference
-                # Ensure every model's inputs and outputs remain GPU tensors
-                # Avoid CPU <-> GPU transfers during model inference
-                # eg:
-                # cls_results = cls(frame)
-                # seg_results = seg(frame)
+                # Pass the GPU-resident frame directly at inference:
+                # cls_results = cls(frame, verbose=False)[0].boxes.data        # remains on GPU
+                # seg_results = seg(frame, verbose=False)[0].masks.data
+                # pose_results = pose(frame, verbose=False)[0].keypoints.data
 
                 t2 = time.time()  # End of detection stage
 
@@ -213,7 +220,7 @@ if __name__ == "__main__":
     mp.set_start_method("spawn")
     process_pool = []
     for i in args:
-        vp = VideoProc(i["gpu"], i["input_url"], i["output_url"])
+        vp = Pipeline(i["gpu"], i["input_url"], i["output_url"])
         vp.start()
         process_pool.append(vp)
 

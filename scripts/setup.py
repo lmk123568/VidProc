@@ -4,7 +4,7 @@ import subprocess
 from setuptools import setup
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, library_paths
 
-MODULE_NAME = "nv_accel"
+MODULE_NAME = "pvp"
 
 os.environ.setdefault("CC", "gcc")
 os.environ.setdefault("CXX", "g++")
