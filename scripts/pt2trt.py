@@ -97,10 +97,10 @@ if __name__ == "__main__":
 
     # our
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    import nv_accel
+    import pvp
 
     img_bgr = torch.as_tensor(img_bgr.copy(), device=torch.device(args.device))
-    our_model = nv_accel.Yolo26DetTRT(engine_path=f, conf_thres=0.25, device_id=0)
+    our_model = pvp.Yolo26DetTRT(engine_path=f, conf_thres=0.25, device_id=0)
     our_bboxes = our_model(img_bgr)[:, :4].cpu().numpy()
 
     print(f"==> trt_bboxes:\n {trt_bboxes}")
