@@ -15,6 +15,8 @@
 
 PyVideoProc 提供基于 CUDA 加速优化的高性能 Python SDK，可高效实现多路、多卡、多模型的视频解码、AI 推理与编码，显著降低开发复杂度并提升吞吐性能
 
+PyVideoProc provides a high-performance Python SDK optimized with CUDA acceleration, enabling efficient multi-stream, multi-GPU, and multi-model video decoding, AI inference, and encoding—significantly reducing development complexity and boosting throughput performance.
+
 [https://github.com/user-attachments/assets/402f9080-004e-457e-8d36-3fefdb56f21d](https://github.com/user-attachments/assets/bb12981c-ac43-40c8-a802-983671356646)
 
 ⭐ 多进程绕过 GIL 限制，提升 Python 并发性能
@@ -88,7 +90,7 @@ python scripts/pt2trt.py  --w ./yolo26n.pt --fp16
 
 > 💡 TensorRT 编译生成 .engine 过程中，推理尺寸默认设置为`(576,1024)`，可以跳过`letterbox`降低计算开销
 
-> 💡 遇到警告 `requirements: Ultralytics requirement ['onnxruntime-gpu'] not found, attempting AutoUpdate...` 可以 `Ctrl + C` 跳过
+> 💡 遇到警告 `requirements: Ultralytics requirement ['onnxruntime-gpu'] not found ...` 可以 `Ctrl + C` 跳过
 
 ### 4. 运行
 
@@ -117,8 +119,6 @@ python main.py
 | ------------------------- | ------- | ------- | -------- | ------------ |
 | VideoPipe（ffmpeg codec） | 511.6 % | 1.5 GiB | 2677 MiB | 16 %         |
 | Our                       | 40 %    | 1.2GiB  | 3932 MiB | 12 %         |
-
-> 工程不是追求完美的数学解，而是在资源受限、时间紧迫、需求模糊的情况下，寻找一个可用的最优解
 
 ## Pipeline
 
