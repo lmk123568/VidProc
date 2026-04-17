@@ -125,10 +125,6 @@ python main.py
 | VideoPipe（ffmpeg codec） | 511.6 % | 1.5 GiB | 2677 MiB | 16 %         |
 | Our                       | 40 %    | 1.2GiB  | 3932 MiB | 12 %         |
 
-## Pipeline
-
-<img src="./assets/pipeline.png" alt="pipe" style="zoom:70%;" />
-
 ## License
 
 [BSD-2-Clause](https://github.com/lmk123568/PyVideoProc/blob/main/LICENSE)
